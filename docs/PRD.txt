@@ -1,0 +1,374 @@
+PRODUCT REQUIREMENTS DOCUMENT (PRD)
+Product Name (working)
+
+BoilerOps
+(Internal tool – not customer-facing branding)
+
+1. Problem Statement
+
+Boiler operations are currently tracked using paper logbooks, verbal handovers, and scattered registers, leading to:
+
+Missing or inaccurate data
+
+No accountability by shift or operator
+
+Difficulty during audits and inspections
+
+No historical visibility for breakdowns or fuel usage
+
+High dependency on individuals instead of systems
+
+2. Product Goal (MVP)
+
+Replace paper-based boiler logs with a secure, login-based web app that operators use daily, producing timestamped, reliable data.
+
+Success = paper logs stop being used for the selected boiler.
+
+3. Target Users
+Primary
+
+Boiler Operator
+
+Enters shift data
+
+Marks attendance
+
+Logs breakdowns
+
+Secondary
+
+Supervisor
+
+Views logs
+
+Reviews shift activity
+
+Uses data for reporting and audits
+
+No external users. No public access.
+
+4. Scope Definition
+In Scope (MVP)
+
+Single department: Boiler
+
+Daily operations only
+
+One or more boilers
+
+Login-based access
+
+Mobile-first web app
+
+Out of Scope (Explicitly)
+
+AI / prediction
+
+Complex analytics
+
+ERP integration
+
+Multi-department workflows
+
+Mobile native apps
+
+On-prem hosting
+
+5. Platform Decision
+
+Web App (Primary)
+
+Optional: Progressive Web App (later)
+
+Reason:
+
+Zero installation
+
+Works on mobile + PC
+
+Easy deployment and updates
+
+Best fit for plant usage and your skillset
+
+6. Functional Requirements (MVP)
+6.1 Authentication & Access Control
+
+Login via email + password
+
+No public signup
+
+Users must be pre-approved (allowlist)
+
+Roles:
+
+Operator
+
+Supervisor
+
+Unauthorized users see “Access Denied”
+
+6.2 Attendance Module
+
+Purpose: Link operator → shift → boiler
+
+Fields:
+
+Operator name (auto from login)
+
+Date (auto)
+
+Shift (A / B / C)
+
+Boiler assigned
+
+Check-in time (auto)
+
+Rules:
+
+Attendance required before shift log entry
+
+One attendance per shift per operator
+
+6.3 Boiler Shift Log (Core Feature)
+
+This is the heart of the MVP
+
+Fields:
+
+Date (auto)
+
+Shift
+
+Boiler ID
+
+Start time
+
+End time
+
+Steam pressure
+
+Steam temperature (optional)
+
+Fuel type
+
+Fuel consumed
+
+Blowdown performed (Yes / No)
+
+Operator name (auto)
+
+Remarks
+
+Rules:
+
+Mandatory fields enforced
+
+Once submitted → cannot be edited
+
+Auto timestamp + user ID
+
+6.4 Breakdown Log
+
+Simple truth log, not CMMS
+
+Fields:
+
+Date & time
+
+Boiler ID
+
+Issue description
+
+Downtime (minutes)
+
+Action taken
+
+Rules:
+
+Multiple breakdowns allowed per shift
+
+Linked to operator & boiler
+
+6.5 Records & Viewing
+
+Table view of:
+
+Shift logs
+
+Attendance
+
+Breakdowns
+
+Filters:
+
+Date
+
+Boiler
+
+Shift
+
+Supervisor can view all
+
+Operator can view own entries
+
+No dashboards in MVP.
+
+7. Non-Functional Requirements
+
+Mobile-first design
+
+Fast load on low bandwidth
+
+HTTPS enabled
+
+Time-stamped records
+
+Simple UX (low typing, large buttons)
+
+Works on Chrome / Edge / Mobile browsers
+
+8. Data Integrity Rules
+
+Every record must store:
+
+Created at
+
+Created by (user ID)
+
+No delete for operators
+
+Supervisor delete only if absolutely required (logged)
+
+No shared accounts
+
+9. Success Metrics (MVP Validation)
+
+After 30 days:
+
+≥90% shifts logged digitally
+
+Paper boiler logbook usage stops
+
+Supervisor actively checks records
+
+Operators can complete entries in <3 minutes
+
+If this fails → fix UX, not features.
+
+10. UI / UX DESIGN SYSTEM
+10.1 Design Principles
+
+Industrial, calm, readable
+
+No bright or flashy colors
+
+High contrast for plant lighting
+
+Minimal screens, minimal text
+
+10.2 Color Palette (Professional + Industrial)
+
+Primary
+
+Deep Blue: #1E3A5F
+(Trust, machinery, stability)
+
+Secondary
+
+Slate Gray: #4A5568
+(Neutral backgrounds, text)
+
+Accent
+
+Safety Green: #2F855A
+(Success, submit, OK)
+
+Warning
+
+Amber: #D69E2E
+
+Error
+
+Red: #C53030
+
+Background
+
+Off-white: #F7FAFC
+
+This palette is plant-safe and fatigue-free.
+
+10.3 Typography
+
+Primary Font
+
+Inter (recommended)
+
+Highly readable
+
+Works well on mobile
+
+Industry-standard web font
+
+Fallbacks:
+
+Roboto
+
+System UI fonts
+
+Font usage:
+
+Headings: Semibold
+
+Body: Regular
+
+Numbers: Medium (for readings)
+
+10.4 UI Components
+
+Large input fields
+
+Dropdowns instead of typing
+
+Toggle switches for Yes/No
+
+Sticky submit button (mobile)
+
+Clear confirmation after submit
+
+11. Navigation Structure (Simple)
+
+Login
+
+Dashboard (links only)
+
+Attendance
+
+Shift Log
+
+Breakdown Log
+
+Records
+
+Logout
+
+No deep menus.
+
+12. Technology (Recommended)
+
+Frontend: React / Next.js
+
+Hosting: Vercel (Free tier)
+
+Backend + Auth + DB: Supabase (Free tier)
+
+Repo: GitHub (Private)
+
+13. Deployment & Privacy
+
+App accessible via private URL
+
+Login required for all pages
+
+Database secured with role-based rules
+
+No public data exposure
