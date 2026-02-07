@@ -1,34 +1,38 @@
+
 import {
-    sqliteTable,
+    pgTable,
+    serial,
     text,
+    timestamp,
+    boolean,
     integer,
-} from "drizzle-orm/sqlite-core";
-import { sql } from "drizzle-orm";
+    date,
+} from "drizzle-orm/pg-core";
 
 // --- Users Table (for Manual Auth) ---
-export const users = sqliteTable("users", {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+export const users = pgTable("users", {
+    id: serial("id").primaryKey(),
     name: text("name").notNull(),
     email: text("email").notNull().unique(),
     password: text("password").notNull(), // Hashed password
     role: text("role", { enum: ["operator", "supervisor"] }).notNull().default("operator"),
-    createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // --- Attendance Table ---
-export const attendance = sqliteTable("attendance", {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+export const attendance = pgTable("attendance", {
+    id: serial("id").primaryKey(),
     userId: integer("user_id").references(() => users.id).notNull(),
-    date: text("date").notNull(), // Stores YYYY-MM-DD
+    date: date("date").notNull(), // Stores YYYY-MM-DD
     shift: text("shift", { enum: ["A", "B", "C"] }).notNull(),
     boilerId: text("boiler_id").notNull(),
-    checkInTime: integer("check_in_time", { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`).notNull(),
+    checkInTime: timestamp("check_in_time").defaultNow().notNull(),
 });
 
 // --- Boiler Shift Logs (Core Feature) ---
-export const shiftLogs = sqliteTable("shift_logs", {
-    id: integer("id").primaryKey({ autoIncrement: true }),
-    date: text("date").notNull(),
+export const shiftLogs = pgTable("shift_logs", {
+    id: serial("id").primaryKey(),
+    date: date("date").notNull(),
     shift: text("shift", { enum: ["A", "B", "C"] }).notNull(),
     boilerId: text("boiler_id").notNull(),
 
@@ -39,7 +43,7 @@ export const shiftLogs = sqliteTable("shift_logs", {
     steamTemp: text("steam_temp"), // Optional
     fuelType: text("fuel_type").notNull(),
     fuelConsumed: text("fuel_consumed").notNull(),
-    blowdownPerformed: integer("blowdown_performed", { mode: 'boolean' }).notNull().default(false),
+    blowdownPerformed: boolean("blowdown_performed").notNull().default(false),
 
     // Metadata
     operatorName: text("operator_name").notNull(), // Snapshot of name
@@ -47,12 +51,12 @@ export const shiftLogs = sqliteTable("shift_logs", {
 
     // Audit
     createdById: integer("created_by_id").references(() => users.id).notNull(),
-    createdAt: integer("created_at", { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // --- Breakdown Logs ---
-export const breakdowns = sqliteTable("breakdowns", {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+export const breakdowns = pgTable("breakdowns", {
+    id: serial("id").primaryKey(),
     boilerId: text("boiler_id").notNull(),
     issueDescription: text("issue_description").notNull(),
     downtimeMinutes: integer("downtime_minutes").notNull(),
@@ -60,5 +64,5 @@ export const breakdowns = sqliteTable("breakdowns", {
 
     // Audit
     createdById: integer("created_by_id").references(() => users.id).notNull(),
-    createdAt: integer("created_at", { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
 });
