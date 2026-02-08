@@ -4,8 +4,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function RecordsPage() {
+    const session = await auth();
+    // @ts-ignore
+    const role = session?.user?.role;
+
+    // Strict Access Control: Operators cannot view records
+    if (role === "operator") {
+        redirect("/dashboard");
+    }
+
     // Parallel Data Fetching
     const [logs, attendanceData, breakdownData] = await Promise.all([
         getShiftLogs(),
@@ -87,6 +98,7 @@ export default async function RecordsPage() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Date</TableHead>
+                                        <TableHead>Employee</TableHead>
                                         <TableHead>Shift</TableHead>
                                         <TableHead>Boiler</TableHead>
                                         <TableHead>Check-In Time</TableHead>
@@ -95,7 +107,7 @@ export default async function RecordsPage() {
                                 <TableBody>
                                     {attendanceData.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
+                                            <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
                                                 No attendance records found.
                                             </TableCell>
                                         </TableRow>
@@ -103,6 +115,7 @@ export default async function RecordsPage() {
                                         attendanceData.map((record) => (
                                             <TableRow key={record.id}>
                                                 <TableCell>{record.date}</TableCell>
+                                                <TableCell className="font-medium">{record.userName || "Unknown"}</TableCell>
                                                 <TableCell><Badge variant="outline">{record.shift}</Badge></TableCell>
                                                 <TableCell>{record.boilerId}</TableCell>
                                                 <TableCell>{record.checkInTime.toLocaleTimeString()}</TableCell>
@@ -127,6 +140,7 @@ export default async function RecordsPage() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Date</TableHead>
+                                        <TableHead>Reported By</TableHead>
                                         <TableHead>Boiler</TableHead>
                                         <TableHead>Issue</TableHead>
                                         <TableHead>Downtime</TableHead>
@@ -136,7 +150,7 @@ export default async function RecordsPage() {
                                 <TableBody>
                                     {breakdownData.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                                            <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
                                                 No breakdown reports found.
                                             </TableCell>
                                         </TableRow>
@@ -144,6 +158,7 @@ export default async function RecordsPage() {
                                         breakdownData.map((record) => (
                                             <TableRow key={record.id}>
                                                 <TableCell>{record.createdAt.toLocaleDateString()}</TableCell>
+                                                <TableCell>{record.reportedBy || "Unknown"}</TableCell>
                                                 <TableCell className="font-bold text-destructive">{record.boilerId}</TableCell>
                                                 <TableCell>{record.issueDescription}</TableCell>
                                                 <TableCell>{record.downtimeMinutes} mins</TableCell>

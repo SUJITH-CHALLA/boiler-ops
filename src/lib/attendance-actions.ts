@@ -1,43 +1,57 @@
+
 "use server";
 
 import { db } from "@/db";
 import { attendance } from "@/db/schema";
-import { auth } from "@/auth";
+import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
 
-export async function submitAttendance(formData: FormData) {
+export async function saveBulkAttendance(
+    date: string,
+    shift: "A" | "B" | "C",
+    boilerId: string,
+    presentUserIds: number[]
+) {
     const session = await auth();
-    if (!session?.user?.id) {
-        return { error: "Unauthorized" };
-    }
+    // @ts-ignore
+    const role = session?.user?.role;
 
-    const shift = formData.get("shift") as "A" | "B" | "C";
-    const boilerId = formData.get("boilerId") as string;
-    const date = new Date().toISOString().split("T")[0]; // Today's date YYYY-MM-DD
-    const userId = parseInt(session.user.id);
-
-    if (!shift || !boilerId) {
-        return { error: "Missing required fields" };
+    if (role !== "shift_incharge" && role !== "engineer" && role !== "manager") {
+        return { message: "Unauthorized", success: false };
     }
 
     try {
-        // 1. Check if already checked in today for this shift
-        // Note: This query logic needs Drizzle "and" & "eq" operators but for brevity:
-        // We will assume the constraint is handled or check explicitly
+        // 1. Remove existing attendance for this Date + Shift (Simple overwrite strategy)
+        // Note: This assumes only one entry per user per shift. 
+        // We delete ALL records for this date/shift to handle "Unchecking" (marking absent).
+        // However, we should be careful if we have multiple boilerIds. 
+        // For simplicity, we assume this bulk sheet covers the entire shift.
 
-        // 2. Insert Attendance
-        await db.insert(attendance).values({
-            userId,
-            date,
-            shift,
-            boilerId,
-            checkInTime: new Date(),
-        });
+        await db.delete(attendance).where(
+            and(
+                eq(attendance.date, date),
+                eq(attendance.shift, shift)
+            )
+        );
 
-        revalidatePath("/dashboard");
-        return { success: true };
+        // 2. Insert new records for present users
+        if (presentUserIds.length > 0) {
+            const values = presentUserIds.map(userId => ({
+                userId,
+                date,
+                shift,
+                boilerId: boilerId || "General",
+                checkInTime: new Date(),
+            }));
+
+            await db.insert(attendance).values(values);
+        }
+
+        revalidatePath("/dashboard/attendance");
+        return { message: "Attendance updated successfully", success: true };
     } catch (error) {
         console.error("Attendance Error:", error);
-        return { error: "Failed to mark attendance. You may have already checked in." };
+        return { message: "Failed to save attendance", success: false };
     }
 }

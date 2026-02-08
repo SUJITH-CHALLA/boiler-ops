@@ -31,25 +31,46 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 if (parsedCredentials.success) {
                     const { email, password } = parsedCredentials.data;
 
-                    // Fetch user from DB
-                    // Note: This will fail until DB is connected.
-                    // For now, we handle the error or mocked state.
-                    const user = await getUser(email);
-                    if (!user) return null;
+                    try {
+                        const user = await getUser(email);
+                        if (!user) return null;
 
-                    // Verify password
-                    const passwordsMatch = await bcrypt.compare(password, user.password);
-                    if (passwordsMatch) {
-                        return {
-                            ...user,
-                            id: user.id.toString(),
-                        };
+                        const passwordsMatch = await bcrypt.compare(password, user.password);
+                        if (passwordsMatch) {
+                            return {
+                                id: user.id.toString(),
+                                name: user.name,
+                                email: user.email,
+                                role: user.role, // Pass role to JWT
+                            };
+                        }
+                    } catch (e) {
+                        return null;
                     }
                 }
-
-                console.log("Invalid credentials");
                 return null;
             },
         }),
     ],
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.role = user.role;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (session.user) {
+                if (token.sub) {
+                    session.user.id = token.sub;
+                }
+                if (token.role) {
+                    // @ts-ignore
+                    session.user.role = token.role;
+                }
+            }
+            return session;
+        },
+        ...authConfig.callbacks,
+    },
 });
