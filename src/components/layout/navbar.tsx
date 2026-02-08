@@ -9,6 +9,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { auth } from "@/auth";
+import { NavLinks } from "./nav-links";
 
 export async function Navbar() {
     const session = await auth();
@@ -83,23 +84,7 @@ export async function Navbar() {
 
                 {/* Desktop Navigation - Only if logged in */}
                 {isLoggedIn && (
-                    <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-                        <Link href="/dashboard" className="hover:text-accent transition-colors">Dashboard</Link>
-                        {canViewRecords && (
-                            <Link href="/dashboard/attendance" className="hover:text-accent transition-colors">Attendance</Link>
-                        )}
-                        <Link href="/dashboard/shift-log" className="hover:text-accent transition-colors">Shift Logs</Link>
-                        <Link href="/dashboard/breakdown" className="hover:text-destructive transition-colors">Breakdown</Link>
-                        {canViewRecords && (
-                            <Link href="/dashboard/records" className="hover:text-accent transition-colors">Records</Link>
-                        )}
-                        {isAdmin && (
-                            <Link href="/dashboard/admin" className="text-destructive font-bold hover:text-red-400 transition-colors flex items-center gap-1">
-                                <Shield className="h-4 w-4" />
-                                Admin
-                            </Link>
-                        )}
-                    </nav>
+                    <NavLinks role={role || "operator"} canViewRecords={canViewRecords} isAdmin={isAdmin} />
                 )}
 
                 {/* User / Actions */}
