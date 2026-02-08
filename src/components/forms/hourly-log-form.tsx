@@ -22,7 +22,8 @@ export function HourlyLogForm({ fields }: { fields: any[] }) {
                 toast.error(res.error);
             } else {
                 toast.success("Hourly Log Recorded!");
-                router.push("/dashboard"); // Redirect home
+                router.refresh(); // Refresh to show new log in the list
+                // intentionally not redirecting so they can add more or see the list
             }
         });
     };

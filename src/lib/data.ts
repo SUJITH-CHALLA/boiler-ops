@@ -55,6 +55,8 @@ export async function getBreakdownLogs(limit = 20) {
         return [];
     }
 }
+// ... existing code ...
+
 export async function getHourlyLogs(shiftLogId: number) {
     try {
         return await db.select({
@@ -70,6 +72,29 @@ export async function getHourlyLogs(shiftLogId: number) {
             .orderBy(desc(hourlyLogs.loggedAt));
     } catch (error) {
         console.error("Fetch Hourly Logs Error:", error);
+        return [];
+    }
+}
+
+export async function getRecentAllHourlyLogs(limit = 10) {
+    try {
+        return await db.select({
+            id: hourlyLogs.id,
+            loggedAt: hourlyLogs.loggedAt,
+            readingTime: hourlyLogs.readingTime, // stored as string "HH:mm"
+            readings: hourlyLogs.readings,
+            recordedBy: users.name,
+            boilerId: shiftLogs.boilerId,
+            shift: shiftLogs.shift,
+            date: shiftLogs.date,
+        })
+            .from(hourlyLogs)
+            .leftJoin(users, eq(hourlyLogs.recordedById, users.id))
+            .leftJoin(shiftLogs, eq(hourlyLogs.shiftLogId, shiftLogs.id))
+            .orderBy(desc(hourlyLogs.loggedAt))
+            .limit(limit);
+    } catch (error) {
+        console.error("Fetch Recent Hourly Logs Error:", error);
         return [];
     }
 }
