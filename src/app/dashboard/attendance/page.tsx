@@ -10,8 +10,8 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
     // @ts-ignore
     const role = session?.user?.role;
 
-    // Strict Access Control: Only Shift Incharge, English, Manager
-    if (role === "operator" || !role) {
+    // Strict Access Control: Only Shift Incharge and Engineer can MARK attendance
+    if (role !== "shift_incharge" && role !== "engineer") {
         redirect("/dashboard");
     }
 

@@ -13,20 +13,17 @@ export function OperatorView() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <Link href="/dashboard/shift-log" className="block h-full">
-                    <Card className="hover:bg-primary/5 transition-colors cursor-pointer h-full border-l-4 border-l-primary">
+                <Link href="/dashboard/shift-log/hourly" className="block h-full">
+                    <Card className="hover:bg-primary/5 transition-colors cursor-pointer h-full border-l-4 border-l-orange-500">
                         <CardHeader>
                             <div className="flex items-center justify-between">
-                                <CardTitle>Daily Shift Log</CardTitle>
-                                <PenTool className="h-6 w-6 text-primary" />
+                                <CardTitle className="text-orange-600">Hourly Logs</CardTitle>
+                                <ClipboardList className="h-6 w-6 text-orange-600" />
                             </div>
-                            <CardDescription>Enter hourly readings, fuel consumption, and parameters.</CardDescription>
+                            <CardDescription>Update boiler parameters every hour.</CardDescription>
                         </CardHeader>
                     </Card>
                 </Link>
-
-                {/* Note: Attendance is usually for Shift Incharge, but if Operator needs it, we can add it. 
-            User said "first class operator" marks attendance. We'll leave it here if they have access. */}
 
                 <Link href="/dashboard/breakdown" className="block h-full">
                     <Card className="hover:bg-red-50 transition-colors cursor-pointer h-full border-l-4 border-l-destructive">
@@ -36,18 +33,6 @@ export function OperatorView() {
                                 <AlertTriangle className="h-6 w-6 text-destructive" />
                             </div>
                             <CardDescription>Log critical equipment failures or safety issues.</CardDescription>
-                        </CardHeader>
-                    </Card>
-                </Link>
-
-                <Link href="/dashboard/shift-log/hourly" className="block h-full">
-                    <Card className="hover:bg-primary/5 transition-colors cursor-pointer h-full border-l-4 border-l-orange-500">
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="text-orange-600">Hourly Data</CardTitle>
-                                <ClipboardList className="h-6 w-6 text-orange-600" />
-                            </div>
-                            <CardDescription>Record steam pressure, flow, and temperature hourly.</CardDescription>
                         </CardHeader>
                     </Card>
                 </Link>

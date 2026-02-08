@@ -80,6 +80,11 @@ export async function submitShiftLog(formData: FormData) {
     }
 
     const userId = parseInt(session.user.id);
+    const role = (session.user as any).role;
+
+    if (role === "operator") {
+        return { error: "Shift Summary can only be submitted by Shift Incharge or higher." };
+    }
 
     // Extract fields
     const boilerId = formData.get("boilerId") as string;

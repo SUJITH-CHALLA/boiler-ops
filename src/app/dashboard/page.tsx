@@ -4,6 +4,7 @@ import { FuelChart, BreakdownChart, PressureChart, SteamChart } from "@/componen
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { OperatorView } from "@/components/dashboard/operator-view";
 
+import { InchargeView } from "@/components/dashboard/incharge-view";
 import { ManagerDashboard } from "@/components/dashboard/manager-dashboard";
 
 export default async function DashboardPage() {
@@ -11,6 +12,7 @@ export default async function DashboardPage() {
     // @ts-ignore
     const role = session?.user?.role;
     const isManager = role === "manager";
+    const isIncharge = role === "shift_incharge" || role === "engineer";
     const showAnalytics = role === "manager" || role === "engineer" || role === "shift_incharge";
 
     let fuelData: any[] = [], breakdownData: any[] = [], pressureData: any[] = [], steamData: any[] = [];
@@ -26,7 +28,7 @@ export default async function DashboardPage() {
     }
 
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8 pb-10">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Plant Dashboard</h1>
@@ -46,9 +48,19 @@ export default async function DashboardPage() {
                 </form>
             </div>
 
-            {/* Operator/Other Action Console */}
-            {!isManager && role === "operator" && (
+            {/* Operator Quick Actions */}
+            {role === "operator" && (
                 <OperatorView />
+            )}
+
+            {/* Shift Incharge / Engineer Quick Actions */}
+            {isIncharge && (
+                <div className="space-y-6">
+                    <InchargeView />
+                    <div className="pt-4 border-t">
+                        <h2 className="text-xl font-bold mb-4">Plant Performance Analytics</h2>
+                    </div>
+                </div>
             )}
 
             {/* Manager Specific Detailed Dashboard */}
@@ -61,8 +73,8 @@ export default async function DashboardPage() {
                 />
             )}
 
-            {/* Standard Analytics for Engineer/Shift Incharge (Old View) */}
-            {role !== "manager" && showAnalytics && (
+            {/* Standard Analytics for Incharge/Engineer (Below their actions) */}
+            {isIncharge && showAnalytics && (
                 <div className="space-y-6">
                     {/* First Row: Fuel & Pressure */}
                     <div className="grid gap-6 md:grid-cols-2">

@@ -19,6 +19,7 @@ export async function Navbar() {
 
     // Authorization checks
     const canViewRecords = role === "manager" || role === "engineer" || role === "shift_incharge";
+    const canDoFullLog = role === "shift_incharge" || role === "engineer" || role === "manager";
     const isAdmin = role === "engineer";
 
     return (
@@ -52,17 +53,25 @@ export async function Navbar() {
                                         </Link>
                                     )}
 
+                                    {role === "operator" && (
+                                        <Link href="/dashboard/shift-log/hourly" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
+                                            <ClipboardList className="h-5 w-5" />
+                                            Hourly Logs
+                                        </Link>
+                                    )}
+
+                                    {canDoFullLog && (
+                                        <Link href="/dashboard/shift-log" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
+                                            <PenTool className="h-5 w-5" />
+                                            Shift Summary
+                                        </Link>
+                                    )}
+
                                     {role !== "manager" && (
-                                        <>
-                                            <Link href="/dashboard/shift-log" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
-                                                <PenTool className="h-5 w-5" />
-                                                Shift Logs
-                                            </Link>
-                                            <Link href="/dashboard/breakdown" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-destructive">
-                                                <AlertTriangle className="h-5 w-5" />
-                                                Report Breakdown
-                                            </Link>
-                                        </>
+                                        <Link href="/dashboard/breakdown" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-destructive">
+                                            <AlertTriangle className="h-5 w-5" />
+                                            Report Breakdown
+                                        </Link>
                                     )}
 
                                     {canViewRecords && (
@@ -94,11 +103,17 @@ export async function Navbar() {
                 )}
 
                 {/* User / Actions */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
+                    {isLoggedIn && (
+                        <div className="hidden md:flex flex-col items-end text-right">
+                            <span className="text-sm font-semibold">{session.user?.name}</span>
+                            <span className="text-[10px] uppercase tracking-wider opacity-80 font-bold">{role}</span>
+                        </div>
+                    )}
                     {isLoggedIn && (
                         <Link href="/dashboard/profile" title="Profile Settings">
-                            <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary/20 hover:text-white">
-                                <UserCircle className="h-6 w-6" />
+                            <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary/20 hover:text-white rounded-full">
+                                <UserCircle className="h-7 w-7" />
                                 <span className="sr-only">User profile</span>
                             </Button>
                         </Link>
