@@ -14,7 +14,7 @@ async function main() {
                 name: "Admin Supervisor",
                 email: "supervisor@boilerops.internal",
                 password: password,
-                role: "supervisor",
+                role: "manager",
             },
             {
                 name: "Operator John",
