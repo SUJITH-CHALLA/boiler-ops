@@ -23,9 +23,10 @@ interface Props {
     breakdownData: any[];
     pressureData: any[];
     steamData: any[];
+    breakdownLogs: any[];
 }
 
-export function ManagerDashboard({ fuelData, breakdownData, pressureData, steamData }: Props) {
+export function ManagerDashboard({ fuelData, breakdownData, pressureData, steamData, breakdownLogs }: Props) {
 
     // Insights Logic (Simulated for demonstration, usually calculated server-side or here)
     const avgFuel = fuelData.reduce((acc, c) => acc + c.fuel, 0) / (fuelData.length || 1);
@@ -97,6 +98,59 @@ export function ManagerDashboard({ fuelData, breakdownData, pressureData, steamD
                         </Card>
                     </div>
                 </div>
+
+                {/* Recent Breakdown List for Quick View */}
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle className="text-xl">Latest Incident Reports</CardTitle>
+                            <CardDescription>Reviewing the most recent 10 logs for operational impact.</CardDescription>
+                        </div>
+                        <Badge variant="outline" className="no-print">System Live</Badge>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="rounded-md border overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead className="bg-muted/50 border-b">
+                                        <tr>
+                                            <th className="px-4 py-2 text-left font-medium">Boiler</th>
+                                            <th className="px-4 py-2 text-left font-medium">Issue</th>
+                                            <th className="px-4 py-2 text-left font-medium">Status</th>
+                                            <th className="px-4 py-2 text-left font-medium">Downtime</th>
+                                            <th className="px-4 py-2 text-left font-medium">Reporter</th>
+                                            <th className="px-4 py-2 text-left font-medium">Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {breakdownLogs.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No recent breakdowns reported.</td>
+                                            </tr>
+                                        ) : (
+                                            breakdownLogs.map((log) => (
+                                                <tr key={log.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
+                                                    <td className="px-4 py-2 font-bold">{log.boilerId}</td>
+                                                    <td className="px-4 py-2 max-w-[200px] truncate">{log.issueDescription}</td>
+                                                    <td className="px-4 py-2">
+                                                        <Badge variant={log.status === 'resolved' ? "secondary" : "destructive"} className="text-[10px] h-4">
+                                                            {log.status || 'active'}
+                                                        </Badge>
+                                                    </td>
+                                                    <td className="px-4 py-2">{(log.downtimeMinutes ?? 0) > 0 ? `${log.downtimeMinutes}m` : "Active"}</td>
+                                                    <td className="px-4 py-2 text-muted-foreground">{log.reportedBy}</td>
+                                                    <td className="px-4 py-2 text-muted-foreground">
+                                                        {new Date(log.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             </TabsContent>
 
             {/* Fuel Consumption Detail Page */}

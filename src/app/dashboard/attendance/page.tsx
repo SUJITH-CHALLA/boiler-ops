@@ -10,10 +10,12 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
     // @ts-ignore
     const role = session?.user?.role;
 
-    // Strict Access Control: Only Shift Incharge and Engineer can MARK attendance
-    if (role !== "shift_incharge" && role !== "engineer") {
+    // Access Control: Operators cannot view attendance
+    if (role === "operator") {
         redirect("/dashboard");
     }
+
+    const isManager = role === "manager";
 
     // Await searchParams in Next.js 15+
     const params = await searchParams;
@@ -37,7 +39,11 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
         <AttendanceSheet
             users={allUsers}
             presentIds={presentIds}
-            role={role}
+            role={role || "operator"}
+            date={date}
+            shift={shift}
+            isManager={isManager}
+            allRecords={attendanceRecords}
         />
     );
 }

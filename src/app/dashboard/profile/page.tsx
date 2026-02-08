@@ -1,6 +1,7 @@
 
-import { auth } from "@/auth";
+import { auth, signOut } from "@/auth";
 import { ChangePasswordForm } from "./password-form";
+import { Button } from "@/components/ui/button";
 
 export default async function ProfilePage() {
     const session = await auth();
@@ -13,14 +14,28 @@ export default async function ProfilePage() {
                 <ChangePasswordForm />
 
                 {/* User Info Card */}
-                <div className="rounded-lg border bg-card p-6 shadow-sm">
-                    <h3 className="text-lg font-semibold">Account Information</h3>
-                    <div className="mt-4 space-y-2 text-sm">
-                        <p><strong>Name:</strong> {session?.user?.name}</p>
-                        <p><strong>Email:</strong> {session?.user?.email}</p>
-                        {/* @ts-ignore */}
-                        <p><strong>Role:</strong> <span className="capitalize">{session?.user?.role}</span></p>
+                <div className="rounded-lg border bg-card p-6 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 className="text-lg font-semibold">Account Information</h3>
+                        <div className="mt-4 space-y-2 text-sm">
+                            <p><strong>Name:</strong> {session?.user?.name}</p>
+                            <p><strong>Email:</strong> {session?.user?.email}</p>
+                            {/* @ts-ignore */}
+                            <p><strong>Role:</strong> <span className="capitalize">{session?.user?.role}</span></p>
+                        </div>
                     </div>
+
+                    <form
+                        action={async () => {
+                            "use server";
+                            await signOut({ redirectTo: "/" });
+                        }}
+                        className="mt-6 pt-6 border-t"
+                    >
+                        <Button variant="destructive" className="w-full">
+                            Sign Out
+                        </Button>
+                    </form>
                 </div>
             </div>
         </div>

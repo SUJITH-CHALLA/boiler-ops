@@ -21,11 +21,12 @@ export function NavLinks({ role, canViewRecords, isAdmin }: NavLinksProps) {
 
     const links = [
         { href: "/dashboard", label: "Dashboard" },
-        ...(canViewRecords && !isManager ? [{ href: "/dashboard/attendance", label: "Attendance" }] : []),
         ...(isOperator ? [{ href: "/dashboard/shift-log/hourly", label: "Hourly Logs" }] : []),
-        ...(canDoFullLog ? [{ href: "/dashboard/shift-log", label: "Shift Summary" }] : []),
+        ...(isManager ? [{ href: "/dashboard/records", label: "Shift Summary" }] : []),
+        ...(canDoFullLog && !isManager ? [{ href: "/dashboard/shift-log", label: "Shift Summary" }] : []),
+        ...(canViewRecords && !isManager ? [{ href: "/dashboard/attendance", label: "Attendance" }] : []),
         ...(!isManager ? [{ href: "/dashboard/breakdown", label: "Breakdown" }] : []),
-        ...(canViewRecords ? [{ href: "/dashboard/records", label: "Records" }] : []),
+        ...(canViewRecords && !isManager ? [{ href: "/dashboard/records", label: "Records" }] : []),
     ];
 
     return (

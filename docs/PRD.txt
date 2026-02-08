@@ -3,11 +3,8 @@ Product Name (working)
 
 BoilerOps
 (Internal tool – not customer-facing branding)
-
 1. Problem Statement
-
 Boiler operations are currently tracked using paper logbooks, verbal handovers, and scattered registers, leading to:
-
 Missing or inaccurate data
 
 No accountability by shift or operator

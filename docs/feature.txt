@@ -1,0 +1,69 @@
+
+================================================================================
+BOILEROPS - LOGGING & AUDIT SYSTEM DOCUMENTATION
+================================================================================
+
+1. CORE SYSTEM ARCHITECTURE
+--------------------------------------------------------------------------------
+The application is a role-based boiler management and auditing system designed to 
+track operational efficiency, personnel attendance, and equipment health.
+
+
+2. USER ROLES & PERMISSIONS
+--------------------------------------------------------------------------------
+* OPERATOR:
+  - Focus: Real-time data entry.
+  - Features: Hourly reading logs for active boilers.
+  
+* SHIFT INCHARGE:
+  - Focus: Shift coordination.
+  - Features: Final shift summaries, attendance logging, and breakdown reporting.
+  
+* MANAGER:
+  - Focus: Auditing and Analytics.
+  - Features: "Shift Summary" dashboard, history records, CSV/PDF report downloads.
+  
+* ENGINEER:
+  - Focus: Administration and Technical control.
+  - Features: User management (Add/Reset), Dynamic Form configuration.
+
+3. KEY FEATURES
+--------------------------------------------------------------------------------
+* AUTOMATED CREDENTIALS: Users are created with a simple Name/Role; Login IDs 
+  (e.g., john.doe) and default passwords (password123) are auto-generated.
+* RECORDS & HISTORY: Date-wise grouped views for Shift Reports, Attendance, 
+  and Breakdowns.
+* BREAKDOWN MANAGEMENT: Color-coded tracking (Red for Active, Green for Solved).
+* REPORTING: One-click CSV export and optimized PDF downloads for all audit logs.
+* DYNAMIC FORMS: Engineers can configure which parameters operators need to log.
+
+4. APPLICATION FLOW
+--------------------------------------------------------------------------------
+1. Login: Staff log in using their Login ID (Username) and Password.
+2. Dashboard: Route-guarded dashboard based on user role.
+3. Activity: Operators log hourly; Incharges close shifts and report incidents.
+4. Audit: Managers review consolidated daily data and download reports for records.
+
+5. FILE-BY-FILE CORE FUNCTIONS
+--------------------------------------------------------------------------------
+* src/app/dashboard/page.tsx: Main dashboard dispatcher based on session role.
+* src/app/dashboard/records/page.tsx: The audit hub. Groups all historical data.
+* src/app/dashboard/admin/user-form.tsx: Automated user creation interface.
+* src/app/dashboard/breakdown/page.tsx: Active breakdown reporting & resolving portal.
+* src/components/layout/nav-links.tsx: Core RBAC (Role Based Access Control) logic for UI.
+* src/components/records/export-buttons.tsx: Logic for CSV conversion and PDF printing.
+* src/lib/user-actions.ts: Server-side logic for password hashing and username generation.
+* src/lib/data.ts: Centralized data fetching layer (SQL Joins for clean reporting).
+* src/auth.ts: Authentication configuration, JWT handling, and role extraction.
+* src/db/schema.ts: Drizzle ORM definitions for Users, Logs, Attendance, and Breakdowns.
+* src/app/globals.css: Premium aesthetic definitions and print-mode styles.
+
+6. TECHNICAL HIGHLIGHTS
+--------------------------------------------------------------------------------
+- Framework: Next.js (App Router)
+- Database: Postgres (via Drizzle ORM)
+- Auth: NextAuth.js (v5)
+- UI: Radix UI / Shadcn (Customized)
+- Testing: Vitest & React Testing Library
+- Icons: Lucide React
+================================================================================

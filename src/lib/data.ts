@@ -1,6 +1,6 @@
 
 import { db } from "@/db";
-import { shiftLogs, attendance, breakdowns } from "@/db/schema";
+import { shiftLogs, attendance, breakdowns, hourlyLogs } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 
 import { users } from "@/db/schema";
@@ -42,6 +42,7 @@ export async function getBreakdownLogs(limit = 20) {
             issueDescription: breakdowns.issueDescription,
             downtimeMinutes: breakdowns.downtimeMinutes,
             actionTaken: breakdowns.actionTaken,
+            status: breakdowns.status,
             createdAt: breakdowns.createdAt,
             reportedBy: users.name
         })
@@ -51,6 +52,24 @@ export async function getBreakdownLogs(limit = 20) {
             .limit(limit);
     } catch (error) {
         console.error("Fetch Breakdown Error:", error);
+        return [];
+    }
+}
+export async function getHourlyLogs(shiftLogId: number) {
+    try {
+        return await db.select({
+            id: hourlyLogs.id,
+            loggedAt: hourlyLogs.loggedAt,
+            readingTime: hourlyLogs.readingTime,
+            readings: hourlyLogs.readings,
+            recordedBy: users.name
+        })
+            .from(hourlyLogs)
+            .leftJoin(users, eq(hourlyLogs.recordedById, users.id))
+            .where(eq(hourlyLogs.shiftLogId, shiftLogId))
+            .orderBy(desc(hourlyLogs.loggedAt));
+    } catch (error) {
+        console.error("Fetch Hourly Logs Error:", error);
         return [];
     }
 }

@@ -11,8 +11,6 @@ import { z } from "zod";
 
 const UserSchema = z.object({
     name: z.string().min(2, "Name is required"),
-    email: z.string().email("Invalid email"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
     role: z.enum(["operator", "shift_incharge", "manager", "engineer"]),
 });
 
@@ -25,8 +23,6 @@ export async function createUser(startState: any, formData: FormData) {
 
     const rawData = {
         name: formData.get("name"),
-        email: formData.get("email"),
-        password: formData.get("password"),
         role: formData.get("role"),
     };
 
@@ -36,10 +32,13 @@ export async function createUser(startState: any, formData: FormData) {
         return { message: "Invalid fields", errors: validatedFields.error.flatten().fieldErrors };
     }
 
-    const { name, email, password, role } = validatedFields.data;
+    const { name, role } = validatedFields.data;
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Auto-generate email: name.lowercase.no-spaces@boiler.internal
+        const email = `${name.toLowerCase().replace(/\s+/g, ".")}@boiler.internal`;
+        const DEFAULT_PASSWORD = "password123";
+        const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, 10);
 
         await db.insert(users).values({
             name,
@@ -49,7 +48,7 @@ export async function createUser(startState: any, formData: FormData) {
             role: role,
         });
     } catch (error) {
-        return { message: "Database Error: User might already exist." };
+        return { message: "Database Error: User with this name (identifier) might already exist." };
     }
 
     revalidatePath("/dashboard/admin");

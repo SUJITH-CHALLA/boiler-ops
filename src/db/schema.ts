@@ -101,6 +101,7 @@ export const hourlyLogs = pgTable("hourly_logs", {
     id: serial("id").primaryKey(),
     shiftLogId: integer("shift_log_id").references(() => shiftLogs.id).notNull(),
     loggedAt: timestamp("logged_at").defaultNow().notNull(),
+    readingTime: text("reading_time"), // The hour this reading belongs to (HH:mm)
     readings: jsonb("readings").notNull(),
     recordedById: integer("recorded_by_id").references(() => users.id).notNull(),
 });

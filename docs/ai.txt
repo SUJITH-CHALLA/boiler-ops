@@ -1,0 +1,91 @@
+# BoilerOps - Application Overview for AI Analysis
+
+## 1. Project Description
+BoilerOps is a digital logbook and operational management system designed for industrial boiler plants. It replaces traditional paper logs with a secure, role-based digital platform to track steam generation, fuel consumption, staff attendance, and equipment breakdowns.
+
+## 2. Technology Stack
+- **Framework:** Next.js 15 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS, Shadcn UI
+- **Database:** PostgreSQL (via Vercel Postgres)
+- **ORM:** Drizzle ORM
+- **Authentication:** NextAuth.js v5 (Credentials Provider)
+
+## 3. User Roles & Access Control
+The application implements strict Role-Based Access Control (RBAC) with four distinct levels:
+
+### A. Operator
+- **Focus:** Data Entry & Execution.
+- **Capabilities:**
+  - Log hourly boiler readings (Pressure, Temperature, Shift, Reading Time).
+  - Report immediate breakdowns.
+  - Restricted from viewing historical records, analytics, or modifying past logs.
+  - Access to a simplified "Operator Console".
+
+### B. Shift Incharge
+- **Focus:** Shift Management & Supervision.
+- **Capabilities:**
+  - Submit end-of-shift summaries (Fuel consumed, Steam flow start/end, Blowdown status).
+  - View and Edit Shift Logs.
+  - Manage Shift Attendance (Mark staff present).
+  - View plant performance analytics.
+  - View historical records (Shift Logs, Attendance, Breakdowns).
+
+### C. Engineer
+- **Focus:** Technical Oversight.
+- **Capabilities:**
+  - Includes all Incharge capabilities.
+  - Access to Admin Console (managing form fields, user management).
+  - Technical analysis of breakdown trends.
+
+### D. Manager
+- **Focus:** Analytics & Audit.
+- **Capabilities:**
+  - **View-Only Access** to all logs (cannot edit/tamper).
+  - **Advanced Dashboard:** Detailed charts for Fuel Consumption, Steam Pressure Consistency, Breakdown Frequency, and Steam Generation.
+  - **Quick Incident Feed:** View latest breakdown reports directly on the dashboard.
+  - **Audit Records:** Access to full Shift Logs, Hourly Logs, and Attendance Reports.
+  - **Reporting:** Ability to print detailed daily/shift reports and export data to CSV.
+
+## 4. Key Workflows
+
+### 4.1. Shift Logging Process
+1.  **Hourly:** Operators submit readings every hour via the "Hourly Log" form. They specify the "Reading Time" to ensure accuracy.
+2.  **End of Shift:** The Shift Incharge reviews hourly inputs and submits a "Shift Summary" which captures aggregate data (Total Fuel, Total Steam, Handover Remarks).
+3.  **Audit:** Managers review these logs in the "Records" section, with the ability to drill down into hourly details per shift.
+
+### 4.2. Breakdown Management
+- Any user (except Manager view-only) can report a breakdown.
+- Breakdowns are tracked as "Active" or "Resolved".
+- Resolving a breakdown requires entering "Action Taken" and "Downtime Minutes".
+- Managers see a live feed of recent incidents.
+
+### 4.3. Attendance System
+- Attendance is recorded per shift (A, B, C).
+- Incharges mark staff present for their shift.
+- System generates daily reports grouping staff by shift.
+- Reports are printable (PDF) and exportable (CSV).
+
+## 5. Major Features Implemented
+- **Digital Logbook:** Replaces physical registers with timestamped, immutable (for operators) digital records.
+- **Professional Reporting:** Custom CSS optimization to print clean, professional reports (browsers headers/footers removed, single-page layout for hourly logs).
+- **Analytics Visualization:** Interactive charts for key performance indicators (KPIs) like Fuel Efficiency and Steam Output.
+- **Audit Trails:** All logs record `createdById` and timestamps. Includes "Reading Time" for precise hourly tracking.
+- **Responsive Design:** Mobile-friendly for floor operators; Desktop-optimized for managers.
+- **Secure Authentication:** Role-based sessions with easy Sign-Out access via the Navbar.
+
+## 6. Design System
+The application uses a specific professional industrial color palette:
+- **Primary:** `#1E3A5F` (Deep Blue) - Used for headers, primary buttons, and emphasis.
+- **Secondary:** `#4A5568` (Slate Gray) - Used for secondary text and muted elements.
+- **Accent:** `#2F855A` (Safety Green) - Used for active states, success indicators, and positive trends.
+- **Destructive:** `#C53030` (Red) - Used for alerts, breakdowns, and danger zones.
+- **Background:** `#ffffff` (White) - Clean background for readability and print optimization.
+- **Muted:** `#E2E8F0` (Light Gray) - Used for borders and subtle backgrounds.
+
+## 7. Context for AI Improvement
+Use this overview to identify:
+- Potential security gaps or enhancements.
+- Logic improvements for industrial plant operations (e.g., automated efficiency calculations).
+- Missing standard CMMS (Computerized Maintenance Management System) features.
+- UX improvements for low-tech environments.

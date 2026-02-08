@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Menu, UserCircle, LayoutDashboard, ClipboardList, PenTool, AlertTriangle, History, Shield } from "lucide-react";
+import { Menu, UserCircle, LayoutDashboard, ClipboardList, PenTool, AlertTriangle, History, Shield, LogOut } from "lucide-react";
 import {
     Sheet,
     SheetContent,
@@ -8,7 +8,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import { auth } from "@/auth";
+import { auth, signOut } from "@/auth";
 import { NavLinks } from "./nav-links";
 
 export async function Navbar() {
@@ -60,11 +60,18 @@ export async function Navbar() {
                                         </Link>
                                     )}
 
-                                    {canDoFullLog && (
-                                        <Link href="/dashboard/shift-log" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
+                                    {role === "manager" ? (
+                                        <Link href="/dashboard/records" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
                                             <PenTool className="h-5 w-5" />
                                             Shift Summary
                                         </Link>
+                                    ) : (
+                                        canDoFullLog && (
+                                            <Link href="/dashboard/shift-log" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
+                                                <PenTool className="h-5 w-5" />
+                                                Shift Log
+                                            </Link>
+                                        )
                                     )}
 
                                     {role !== "manager" && (
@@ -74,7 +81,7 @@ export async function Navbar() {
                                         </Link>
                                     )}
 
-                                    {canViewRecords && (
+                                    {canViewRecords && role !== "manager" && (
                                         <Link href="/dashboard/records" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
                                             <History className="h-5 w-5" />
                                             Records History
@@ -111,12 +118,25 @@ export async function Navbar() {
                         </div>
                     )}
                     {isLoggedIn && (
-                        <Link href="/dashboard/profile" title="Profile Settings">
-                            <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary/20 hover:text-white rounded-full">
-                                <UserCircle className="h-7 w-7" />
-                                <span className="sr-only">User profile</span>
-                            </Button>
-                        </Link>
+                        <div className="flex items-center">
+                            <Link href="/dashboard/profile" title="Profile Settings">
+                                <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary/20 hover:text-white rounded-full">
+                                    <UserCircle className="h-7 w-7" />
+                                    <span className="sr-only">User profile</span>
+                                </Button>
+                            </Link>
+                            <form
+                                action={async () => {
+                                    "use server";
+                                    await signOut({ redirectTo: "/" });
+                                }}
+                            >
+                                <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-destructive hover:text-white rounded-full ml-1" title="Sign Out">
+                                    <LogOut className="h-5 w-5" />
+                                    <span className="sr-only">Sign out</span>
+                                </Button>
+                            </form>
+                        </div>
                     )}
                 </div>
             </div>

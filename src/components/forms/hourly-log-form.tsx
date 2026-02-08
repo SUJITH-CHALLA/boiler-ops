@@ -62,6 +62,16 @@ export function HourlyLogForm({ fields }: { fields: any[] }) {
                                 </SelectContent>
                             </Select>
                         </div>
+
+                        <div className="space-y-2 col-span-2 sm:col-span-1">
+                            <Label>Reading Time</Label>
+                            <Input
+                                type="time"
+                                name="readingTime"
+                                required
+                                defaultValue={new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            />
+                        </div>
                     </div>
 
                     <div className="border-t pt-4">

@@ -80,7 +80,7 @@ export default async function AdminPage() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Name</TableHead>
-                                <TableHead>Email</TableHead>
+                                <TableHead>Login ID (Username)</TableHead>
                                 <TableHead>Role</TableHead>
                                 <TableHead>Created At</TableHead>
                                 <TableHead>Actions</TableHead>

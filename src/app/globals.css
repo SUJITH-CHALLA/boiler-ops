@@ -48,8 +48,8 @@
 
 :root {
   --radius: 0.5rem;
-  --background: #F7FAFC;
-  /* Off-white */
+  --background: #ffffff;
+  /* Was Off-white #F7FAFC */
   --foreground: #1E3A5F;
   /* Deep Blue (Text) */
   --card: #ffffff;
@@ -132,5 +132,49 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  @media print {
+    @page {
+      margin: 0;
+    }
+
+    body {
+      background: white !important;
+      padding: 1.6cm 1cm !important;
+      margin: 0 !important;
+    }
+
+    /* Hide browser headers/footers hack */
+    header,
+    footer,
+    nav,
+    .no-print,
+    [role="tablist"],
+    button {
+      display: none !important;
+    }
+
+    /* Ensure table content is visible and breaks nicely */
+    .card {
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .print-content {
+      display: block !important;
+    }
+
+    .break-inside-avoid {
+      break-inside: avoid;
+    }
+
+    /* Force background colors in print if needed */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
   }
 }

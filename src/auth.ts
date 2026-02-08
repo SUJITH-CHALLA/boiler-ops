@@ -24,9 +24,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     providers: [
         Credentials({
             async authorize(credentials) {
+                // Modified to handle both email and simple username login
+                const rawEmail = credentials.email as string;
+                const emailToUse = rawEmail.includes("@") ? rawEmail : `${rawEmail.toLowerCase().replace(/\s+/g, ".")}@boiler.internal`;
+
                 const parsedCredentials = z
                     .object({ email: z.string().email(), password: z.string().min(6) })
-                    .safeParse(credentials);
+                    .safeParse({ email: emailToUse, password: credentials.password });
 
                 if (parsedCredentials.success) {
                     const { email, password } = parsedCredentials.data;

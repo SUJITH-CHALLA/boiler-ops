@@ -9,6 +9,12 @@ export async function submitHourlyLog(formData: FormData) {
     const session = await auth();
     if (!session?.user?.id) return { error: "Unauthorized" };
 
+    // @ts-ignore
+    const role = session.user.role;
+    if (role === "manager") {
+        return { error: "Managers have view-only access." };
+    }
+
     const boilerId = formData.get("boilerId") as string;
     const shift = formData.get("shift") as "A" | "B" | "C";
     const date = new Date().toISOString().split("T")[0];
@@ -23,7 +29,9 @@ export async function submitHourlyLog(formData: FormData) {
         if (field.required && (!val || val.toString().trim() === "")) {
             return { error: `Missing required field: ${field.label}` };
         }
-        readings[field.key] = val;
+        // Sanitize Input (prevent excessive length or non-string/number)
+        const strVal = val ? String(val).slice(0, 500) : "";
+        readings[field.key] = strVal;
     }
 
     try {
@@ -58,9 +66,12 @@ export async function submitHourlyLog(formData: FormData) {
             shiftLog = newLog;
         }
 
+        const readingTime = formData.get("readingTime") as string || new Date().toLocaleTimeString("en-GB", { hour: '2-digit', minute: '2-digit' });
+
         await db.insert(hourlyLogs).values({
             shiftLogId: shiftLog.id,
             readings: readings, // Stores dynamic data like { "steam_pressure": "100", "temp": "200" }
+            readingTime: readingTime,
             recordedById: parseInt(session.user.id),
         });
 
@@ -80,10 +91,11 @@ export async function submitShiftLog(formData: FormData) {
     }
 
     const userId = parseInt(session.user.id);
-    const role = (session.user as any).role;
+    // @ts-ignore
+    const role = session.user.role;
 
-    if (role === "operator") {
-        return { error: "Shift Summary can only be submitted by Shift Incharge or higher." };
+    if (role !== "shift_incharge" && role !== "engineer") {
+        return { error: "Unauthorized: Only Shift Incharges or Engineers can submit summaries." };
     }
 
     // Extract fields
@@ -139,7 +151,9 @@ export async function updateShiftLog(id: number, formData: FormData) {
 
     // @ts-ignore
     const role = session.user.role;
-    if (role === "operator") return { error: "Operators cannot edit logs." };
+    if (role !== "shift_incharge" && role !== "engineer") {
+        return { error: "Unauthorized: Only Shift Incharges or Engineers can edit logs." };
+    }
 
     try {
         await db.update(shiftLogs).set({

@@ -1,5 +1,6 @@
 import { auth, signOut } from "@/auth";
 import { getFuelConsumptionStats, getBreakdownStats, getPressureTrends, getSteamGenerationStats } from "@/lib/analytics-data";
+import { getBreakdownLogs } from "@/lib/data";
 import { FuelChart, BreakdownChart, PressureChart, SteamChart } from "@/components/analytics/Charts";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { OperatorView } from "@/components/dashboard/operator-view";
@@ -13,18 +14,22 @@ export default async function DashboardPage() {
     const role = session?.user?.role;
     const isManager = role === "manager";
     const isIncharge = role === "shift_incharge" || role === "engineer";
-    const showAnalytics = role === "manager" || role === "engineer" || role === "shift_incharge";
+    const showAnalytics = role !== "operator";
 
     let fuelData: any[] = [], breakdownData: any[] = [], pressureData: any[] = [], steamData: any[] = [];
+    let breakdownLogs: any[] = [];
 
     if (showAnalytics) {
         // Parallel fetch for dashboard performance
-        [fuelData, breakdownData, pressureData, steamData] = await Promise.all([
+        const results = await Promise.all([
             getFuelConsumptionStats(),
             getBreakdownStats(),
             getPressureTrends(),
-            getSteamGenerationStats()
+            getSteamGenerationStats(),
+            isManager ? getBreakdownLogs(10) : Promise.resolve([])
         ]);
+        [fuelData, breakdownData, pressureData, steamData] = results;
+        breakdownLogs = results[4] as any[];
     }
 
     return (
@@ -36,16 +41,6 @@ export default async function DashboardPage() {
                         {isManager ? "Analytical overview and strategic suggestions." : "Operational metrics and action console."}
                     </p>
                 </div>
-                <form
-                    action={async () => {
-                        "use server";
-                        await signOut();
-                    }}
-                >
-                    <button className="text-sm font-medium hover:underline text-destructive">
-                        Sign Out
-                    </button>
-                </form>
             </div>
 
             {/* Operator Quick Actions */}
@@ -70,11 +65,12 @@ export default async function DashboardPage() {
                     breakdownData={breakdownData}
                     pressureData={pressureData}
                     steamData={steamData}
+                    breakdownLogs={breakdownLogs}
                 />
             )}
 
-            {/* Standard Analytics for Incharge/Engineer (Below their actions) */}
-            {isIncharge && showAnalytics && (
+            {/* Standard Analytics for Staff (Operator/Incharge/Engineer) */}
+            {!isManager && showAnalytics && (
                 <div className="space-y-6">
                     {/* First Row: Fuel & Pressure */}
                     <div className="grid gap-6 md:grid-cols-2">
