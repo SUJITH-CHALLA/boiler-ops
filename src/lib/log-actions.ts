@@ -127,3 +127,35 @@ export async function submitShiftLog(formData: FormData) {
         return { error: "Failed to submit log entry." };
     }
 }
+
+export async function updateShiftLog(id: number, formData: FormData) {
+    const session = await auth();
+    if (!session?.user) return { error: "Unauthorized" };
+
+    // @ts-ignore
+    const role = session.user.role;
+    if (role === "operator") return { error: "Operators cannot edit logs." };
+
+    try {
+        await db.update(shiftLogs).set({
+            boilerId: formData.get("boilerId") as string,
+            shift: formData.get("shift") as "A" | "B" | "C",
+            startTime: formData.get("startTime") as string,
+            endTime: formData.get("endTime") as string,
+            steamPressure: formData.get("steamPressure") as string,
+            steamTemp: formData.get("steamTemp") as string,
+            steamFlowStart: formData.get("steamFlowStart") as string,
+            steamFlowEnd: formData.get("steamFlowEnd") as string,
+            fuelType: formData.get("fuelType") as string,
+            fuelConsumed: formData.get("fuelConsumed") as string,
+            blowdownPerformed: formData.get("blowdownPerformed") === "on",
+            remarks: formData.get("remarks") as string,
+        }).where(eq(shiftLogs.id, id));
+
+        revalidatePath("/dashboard/records");
+        return { success: true };
+    } catch (error) {
+        console.error("Update Log Error:", error);
+        return { error: "Failed to update log." };
+    }
+}

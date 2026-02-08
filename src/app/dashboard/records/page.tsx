@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { ShiftLogActions } from "@/components/records/shift-log-actions";
 
 export default async function RecordsPage() {
     const session = await auth();
@@ -56,12 +57,13 @@ export default async function RecordsPage() {
                                         <TableHead>Pressure</TableHead>
                                         <TableHead>Fuel</TableHead>
                                         <TableHead>Remarks</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {logs.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
+                                            <TableCell colSpan={8} className="text-center h-24 text-muted-foreground">
                                                 No logs found.
                                             </TableCell>
                                         </TableRow>
@@ -76,7 +78,16 @@ export default async function RecordsPage() {
                                                 <TableCell>{log.operatorName}</TableCell>
                                                 <TableCell>{log.steamPressure}</TableCell>
                                                 <TableCell>{log.fuelConsumed} ({log.fuelType})</TableCell>
-                                                <TableCell className="max-w-[200px] truncate">{log.remarks || "-"}</TableCell>
+                                                <TableCell className="max-w-[150px] truncate">{log.remarks || "-"}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <ShiftLogActions
+                                                        log={{
+                                                            ...log,
+                                                            createdAt: log.createdAt.toISOString()
+                                                        }}
+                                                        role={role}
+                                                    />
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     )}
