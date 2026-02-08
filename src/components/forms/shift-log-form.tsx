@@ -112,6 +112,7 @@ export function ShiftLogForm() {
                                     <SelectItem value="Gas">Natural Gas</SelectItem>
                                     <SelectItem value="Diesel">Diesel</SelectItem>
                                     <SelectItem value="Biomass">Biomass</SelectItem>
+                                    <SelectItem value="Rice Husk">Rice Husk</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
