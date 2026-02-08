@@ -39,8 +39,15 @@ export const shiftLogs = pgTable("shift_logs", {
     // Readings
     startTime: text("start_time").notNull(), // HH:mm
     endTime: text("end_time").notNull(), // HH:mm
+
+    // Steam Parameters
     steamPressure: text("steam_pressure").notNull(),
     steamTemp: text("steam_temp"), // Optional
+
+    // New: Steam Flow Meter Readings (for Generation calc)
+    steamFlowStart: text("steam_flow_start").notNull().default("0"),
+    steamFlowEnd: text("steam_flow_end").notNull().default("0"),
+
     fuelType: text("fuel_type").notNull(),
     fuelConsumed: text("fuel_consumed").notNull(),
     blowdownPerformed: boolean("blowdown_performed").notNull().default(false),
@@ -59,8 +66,15 @@ export const breakdowns = pgTable("breakdowns", {
     id: serial("id").primaryKey(),
     boilerId: text("boiler_id").notNull(),
     issueDescription: text("issue_description").notNull(),
-    downtimeMinutes: integer("downtime_minutes").notNull(),
-    actionTaken: text("action_taken").notNull(),
+
+    // Updated Breakdown Logic
+    startTime: timestamp("start_time").defaultNow().notNull(), // When reported
+    endTime: timestamp("end_time"), // When resolved (Nullable = Active)
+    status: text("status", { enum: ["active", "resolved"] }).notNull().default("active"),
+
+    // Legacy / Calculated fields
+    downtimeMinutes: integer("downtime_minutes"), // Calculated upon resolution
+    actionTaken: text("action_taken"), // Provided upon resolution
 
     // Audit
     createdById: integer("created_by_id").references(() => users.id).notNull(),

@@ -20,14 +20,16 @@ export async function submitShiftLog(formData: FormData) {
     const endTime = formData.get("endTime") as string;
     const steamPressure = formData.get("steamPressure") as string;
     const steamTemp = formData.get("steamTemp") as string;
+    const steamFlowStart = formData.get("steamFlowStart") as string;
+    const steamFlowEnd = formData.get("steamFlowEnd") as string;
     const fuelType = formData.get("fuelType") as string;
     const fuelConsumed = formData.get("fuelConsumed") as string;
-    const blowdownPerformed = formData.get("blowdownPerformed") === "on"; // Checkbox/Switch
+    const blowdownPerformed = formData.get("blowdownPerformed") === "on";
     const remarks = formData.get("remarks") as string;
-    const date = new Date().toISOString().split("T")[0]; // Today
+    const date = new Date().toISOString().split("T")[0];
 
     // Simple Validation
-    if (!boilerId || !shift || !startTime || !endTime || !steamPressure || !fuelType || !fuelConsumed) {
+    if (!boilerId || !shift || !startTime || !endTime || !steamPressure || !fuelType || !fuelConsumed || !steamFlowStart || !steamFlowEnd) {
         return { error: "Please fill in all mandatory fields." };
     }
 
@@ -42,6 +44,8 @@ export async function submitShiftLog(formData: FormData) {
             endTime,
             steamPressure,
             steamTemp,
+            steamFlowStart,
+            steamFlowEnd,
             fuelType,
             fuelConsumed,
             blowdownPerformed,

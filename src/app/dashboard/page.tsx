@@ -1,6 +1,6 @@
 import { auth, signOut } from "@/auth";
-import { getFuelConsumptionStats, getBreakdownStats, getPressureTrends } from "@/lib/analytics-data";
-import { FuelChart, BreakdownChart, PressureChart } from "@/components/analytics/Charts";
+import { getFuelConsumptionStats, getBreakdownStats, getPressureTrends, getSteamGenerationStats } from "@/lib/analytics-data";
+import { FuelChart, BreakdownChart, PressureChart, SteamChart } from "@/components/analytics/Charts";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { OperatorView } from "@/components/dashboard/operator-view";
 
@@ -10,14 +10,15 @@ export default async function DashboardPage() {
     const role = session?.user?.role;
     const showAnalytics = role === "manager" || role === "engineer" || role === "shift_incharge";
 
-    let fuelData = [], breakdownData = [], pressureData = [];
+    let fuelData: any[] = [], breakdownData: any[] = [], pressureData: any[] = [], steamData: any[] = [];
 
     if (showAnalytics) {
         // Parallel fetch for dashboard performance
-        [fuelData, breakdownData, pressureData] = await Promise.all([
+        [fuelData, breakdownData, pressureData, steamData] = await Promise.all([
             getFuelConsumptionStats(),
             getBreakdownStats(),
-            getPressureTrends()
+            getPressureTrends(),
+            getSteamGenerationStats()
         ]);
     }
 
@@ -96,7 +97,7 @@ export default async function DashboardPage() {
                         </Card>
                     </div>
 
-                    {/* Second Row: Breakdowns */}
+                    {/* Second Row: Breakdowns & Steam Generation */}
                     <div className="grid gap-6 md:grid-cols-2">
                         <Card>
                             <CardHeader>
@@ -114,22 +115,18 @@ export default async function DashboardPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Placeholder for Efficiency or Alerts */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>System Health</CardTitle>
-                                <CardDescription>Current Alerts</CardDescription>
+                                <CardTitle>Steam Generation</CardTitle>
+                                <CardDescription>Calculated Output (Tonnes)</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between rounded-md border p-4">
-                                        <span className="text-sm font-medium">Critical Issues</span>
-                                        <span className="text-2xl font-bold text-green-600">0</span>
-                                    </div>
-                                    <div className="flex items-center justify-between rounded-md border p-4">
-                                        <span className="text-sm font-medium">Maintenance Due</span>
-                                        <span className="text-2xl font-bold text-orange-500">2 Days</span>
-                                    </div>
+                                <div className="h-[300px]">
+                                    {steamData.length > 0 ? (
+                                        <SteamChart data={steamData} />
+                                    ) : (
+                                        <div className="flex h-full items-center justify-center text-muted-foreground">No steam flow data found</div>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>

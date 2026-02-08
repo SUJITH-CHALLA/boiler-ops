@@ -63,3 +63,27 @@ export async function getPressureTrends() {
         pressure: parseFloat(log.pressure.replace(/[^0-9.]/g, "")) || 0,
     })).reverse();
 }
+
+export async function getSteamGenerationStats() {
+    const logs = await db
+        .select({
+            date: shiftLogs.date,
+            start: shiftLogs.steamFlowStart,
+            end: shiftLogs.steamFlowEnd,
+            boilerId: shiftLogs.boilerId,
+        })
+        .from(shiftLogs)
+        .orderBy(desc(shiftLogs.date))
+        .limit(30);
+
+    return logs.map(log => {
+        const s = parseFloat(log.start?.replace(/[^0-9.]/g, "") || "0");
+        const e = parseFloat(log.end?.replace(/[^0-9.]/g, "") || "0");
+        const generation = Math.max(0, e - s);
+        return {
+            date: new Date(log.date).toLocaleDateString(),
+            generation,
+            boiler: log.boilerId,
+        };
+    }).reverse();
+}

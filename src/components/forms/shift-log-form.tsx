@@ -86,6 +86,20 @@ export function ShiftLogForm() {
                         </div>
                     </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md bg-muted/20">
+                        <div className="space-y-2">
+                            <Label htmlFor="steamFlowStart">Start Steam Flow Reading (Tonnes)</Label>
+                            <Input name="steamFlowStart" type="number" step="0.01" required placeholder="0.00" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="steamFlowEnd">End Steam Flow Reading (Tonnes)</Label>
+                            <Input name="steamFlowEnd" type="number" step="0.01" required placeholder="0.00" />
+                        </div>
+                        <div className="col-span-2 text-xs text-muted-foreground">
+                            This data is used to calculate steam generation tonnage per shift.
+                        </div>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="fuelType">Fuel Type</Label>
