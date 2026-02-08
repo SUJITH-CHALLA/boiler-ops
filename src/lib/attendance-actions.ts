@@ -55,3 +55,29 @@ export async function saveBulkAttendance(
         return { message: "Failed to save attendance", success: false };
     }
 }
+
+export async function submitAttendance(formData: FormData) {
+    const session = await auth();
+    if (!session?.user?.id) return { error: "Unauthorized" };
+
+    const shift = formData.get("shift") as string;
+    const boilerId = formData.get("boilerId") as string;
+    const date = new Date().toISOString().split("T")[0];
+
+    try {
+        await db.insert(attendance).values({
+            userId: Number(session.user.id),
+            date,
+            shift: shift as "A" | "B" | "C",
+            boilerId,
+            checkInTime: new Date(),
+        });
+
+        revalidatePath("/dashboard");
+        revalidatePath("/dashboard/records");
+        return { success: true };
+    } catch (error) {
+        console.error("Attendance Submit Error:", error);
+        return { error: "Failed to mark attendance." };
+    }
+}

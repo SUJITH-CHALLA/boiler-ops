@@ -10,8 +10,7 @@ import { ShiftLogActions } from "@/components/records/shift-log-actions";
 
 export default async function RecordsPage() {
     const session = await auth();
-    // @ts-ignore
-    const role = session?.user?.role;
+    const role = (session?.user as any)?.role as string;
 
     // Strict Access Control: Operators cannot view records
     if (role === "operator") {
