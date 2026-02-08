@@ -48,30 +48,33 @@ export function FormFieldManager({ fields }: { fields: any[] }) {
                     <CardTitle>Add New Column</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <form action={handleAdd} className="flex gap-4 items-end">
-                        <div className="space-y-2 flex-1">
+                    <form action={handleAdd} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                        <div className="md:col-span-5 space-y-2">
                             <Label>Label</Label>
-                            <Input name="label" placeholder="e.g. Feed Pump Amps" required />
+                            <Input name="label" placeholder="e.g. Feed Pump Amps" className="h-10" required />
                         </div>
-                        <div className="space-y-2 w-[150px]">
+                        <div className="md:col-span-3 space-y-2">
                             <Label>Type</Label>
                             <Select name="type" defaultValue="number">
-                                <SelectTrigger>
+                                <SelectTrigger className="h-10">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="number">Number</SelectItem>
                                     <SelectItem value="text">Text</SelectItem>
+                                    <SelectItem value="select">Select (OK/Issue)</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-2 w-[100px]">
+                        <div className="md:col-span-2 space-y-2">
                             <Label>Unit</Label>
-                            <Input name="unit" placeholder="e.g. A" />
+                            <Input name="unit" placeholder="e.g. A" className="h-10" />
                         </div>
-                        <Button type="submit" disabled={isPending}>
-                            <Plus className="mr-2 h-4 w-4" /> Add
-                        </Button>
+                        <div className="md:col-span-2">
+                            <Button type="submit" disabled={isPending} className="w-full h-10">
+                                <Plus className="mr-2 h-4 w-4" /> Add
+                            </Button>
+                        </div>
                     </form>
                 </CardContent>
             </Card>
