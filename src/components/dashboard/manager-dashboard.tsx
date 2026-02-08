@@ -29,10 +29,10 @@ interface Props {
 export function ManagerDashboard({ fuelData, breakdownData, pressureData, steamData, breakdownLogs }: Props) {
 
     // Insights Logic (Simulated for demonstration, usually calculated server-side or here)
-    const avgFuel = fuelData.reduce((acc, c) => acc + c.fuel, 0) / (fuelData.length || 1);
-    const totalBreakdowns = breakdownData.reduce((acc, c) => acc + c.value, 0);
-    const avgPressure = pressureData.reduce((acc, c) => acc + c.pressure, 0) / (pressureData.length || 1);
-    const totalSteam = steamData.reduce((acc, c) => acc + c.generation, 0);
+    const avgFuel = (fuelData || []).reduce((acc, c) => acc + (c?.fuel || 0), 0) / ((fuelData?.length || 1));
+    const totalBreakdowns = (breakdownData || []).reduce((acc, c) => acc + (c?.value || 0), 0);
+    const avgPressure = (pressureData || []).reduce((acc, c) => acc + (c?.pressure || 0), 0) / ((pressureData?.length || 1));
+    const totalSteam = (steamData || []).reduce((acc, c) => acc + (c?.generation || 0), 0);
 
     return (
         <Tabs defaultValue="breakdowns" className="space-y-6">

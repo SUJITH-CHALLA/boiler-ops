@@ -4,86 +4,109 @@ import { shiftLogs, breakdowns } from "@/db/schema";
 import { desc, sql } from "drizzle-orm";
 
 export async function getFuelConsumptionStats() {
-    const logs = await db
-        .select({
-            date: shiftLogs.date,
-            fuel: shiftLogs.fuelConsumed,
-            boilerId: shiftLogs.boilerId,
-        })
-        .from(shiftLogs)
-        .orderBy(desc(shiftLogs.date))
-        .limit(30); // Last 30 entries
+    try {
+        const logs = await db
+            .select({
+                date: shiftLogs.date,
+                fuel: shiftLogs.fuelConsumed,
+                boilerId: shiftLogs.boilerId,
+            })
+            .from(shiftLogs)
+            .orderBy(desc(shiftLogs.date))
+            .limit(30);
 
-    // Process data (since fuel is stored as text, e.g. "500 kg")
-    // We'll try to extract the number.
-    const processed = logs.map(log => {
-        const fuelVal = parseFloat(log.fuel.replace(/[^0-9.]/g, "")) || 0;
-        return {
-            date: new Date(log.date).toLocaleDateString(),
-            fuel: fuelVal,
-            boiler: log.boilerId,
-        };
-    });
+        const processed = logs.map(log => {
+            // Handle potential null/undefined log.fuel
+            const fuelStr = log.fuel || "0";
+            const fuelVal = parseFloat(fuelStr.replace(/[^0-9.]/g, "")) || 0;
+            return {
+                date: new Date(log.date).toLocaleDateString(),
+                fuel: fuelVal,
+                boiler: log.boilerId,
+            };
+        });
 
-    // Group by date if multiple boilers
-    // Simpler approach: return raw points for now, or group by day.
-    // Let's reverse to show chronological order
-    return processed.reverse();
+        return processed.reverse();
+    } catch (error) {
+        console.error("Fetch Fuel Stats Error:", error);
+        return [];
+    }
 }
 
 export async function getBreakdownStats() {
-    const logs = await db
-        .select({
-            boilerId: breakdowns.boilerId,
-            downtime: breakdowns.downtimeMinutes,
-        })
-        .from(breakdowns);
+    try {
+        const logs = await db
+            .select({
+                boilerId: breakdowns.boilerId,
+                downtime: breakdowns.downtimeMinutes,
+            })
+            .from(breakdowns);
 
-    // Group by Boiler ID
-    const grouped: Record<string, number> = {};
-    logs.forEach(log => {
-        grouped[log.boilerId] = (grouped[log.boilerId] || 0) + 1;
-    });
+        const grouped: Record<string, number> = {};
+        logs.forEach(log => {
+            if (log.boilerId) {
+                grouped[log.boilerId] = (grouped[log.boilerId] || 0) + 1;
+            }
+        });
 
-    return Object.entries(grouped).map(([name, value]) => ({ name, value }));
+        return Object.entries(grouped).map(([name, value]) => ({ name, value }));
+    } catch (error) {
+        console.error("Fetch Breakdown Stats Error:", error);
+        return [];
+    }
 }
 
 export async function getPressureTrends() {
-    const logs = await db
-        .select({
-            date: shiftLogs.date,
-            pressure: shiftLogs.steamPressure,
-        })
-        .from(shiftLogs)
-        .orderBy(desc(shiftLogs.date))
-        .limit(30);
+    try {
+        const logs = await db
+            .select({
+                date: shiftLogs.date,
+                pressure: shiftLogs.steamPressure,
+            })
+            .from(shiftLogs)
+            .orderBy(desc(shiftLogs.date))
+            .limit(30);
 
-    return logs.map(log => ({
-        date: new Date(log.date).toLocaleDateString(),
-        pressure: parseFloat(log.pressure.replace(/[^0-9.]/g, "")) || 0,
-    })).reverse();
+        return logs.map(log => {
+            const pStr = log.pressure || "0";
+            return {
+                date: new Date(log.date).toLocaleDateString(),
+                pressure: parseFloat(pStr.replace(/[^0-9.]/g, "")) || 0,
+            };
+        }).reverse();
+    } catch (error) {
+        console.error("Fetch Pressure Trends Error:", error);
+        return [];
+    }
 }
 
 export async function getSteamGenerationStats() {
-    const logs = await db
-        .select({
-            date: shiftLogs.date,
-            start: shiftLogs.steamFlowStart,
-            end: shiftLogs.steamFlowEnd,
-            boilerId: shiftLogs.boilerId,
-        })
-        .from(shiftLogs)
-        .orderBy(desc(shiftLogs.date))
-        .limit(30);
+    try {
+        const logs = await db
+            .select({
+                date: shiftLogs.date,
+                start: shiftLogs.steamFlowStart,
+                end: shiftLogs.steamFlowEnd,
+                boilerId: shiftLogs.boilerId,
+            })
+            .from(shiftLogs)
+            .orderBy(desc(shiftLogs.date))
+            .limit(30);
 
-    return logs.map(log => {
-        const s = parseFloat(log.start?.replace(/[^0-9.]/g, "") || "0");
-        const e = parseFloat(log.end?.replace(/[^0-9.]/g, "") || "0");
-        const generation = Math.max(0, e - s);
-        return {
-            date: new Date(log.date).toLocaleDateString(),
-            generation,
-            boiler: log.boilerId,
-        };
-    }).reverse();
+        return logs.map(log => {
+            const startStr = log.start || "0";
+            const endStr = log.end || "0";
+            const s = parseFloat(startStr.replace(/[^0-9.]/g, "") || "0");
+            const e = parseFloat(endStr.replace(/[^0-9.]/g, "") || "0");
+            const generation = Math.max(0, e - s);
+            return {
+                date: new Date(log.date).toLocaleDateString(),
+                generation,
+                boiler: log.boilerId,
+            };
+        }).reverse();
+    } catch (error) {
+        console.error("Fetch Steam Stats Error:", error);
+        return [];
+    }
 }
