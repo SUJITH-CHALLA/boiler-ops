@@ -35,7 +35,7 @@ export function NavLinks({ role, canViewRecords, isAdmin }: NavLinksProps) {
                             "transition-all py-2 hover:text-white",
                             isActive
                                 ? "border-b-2 border-white font-bold text-white"
-                                : "border-b-2 border-transparent text-primary-foreground/80"
+                                : "border-b-2 border-transparent hover:border-white/50 text-white/80 hover:text-white"
                         )}
                     >
                         {link.label}
@@ -51,7 +51,7 @@ export function NavLinks({ role, canViewRecords, isAdmin }: NavLinksProps) {
                         "flex items-center gap-1 transition-all py-2 hover:text-white",
                         pathname === "/dashboard/admin"
                             ? "border-b-2 border-white font-bold text-white"
-                            : "border-b-2 border-transparent text-destructive font-bold hover:text-red-200"
+                            : "border-b-2 border-transparent hover:border-white/50 text-destructive font-bold hover:text-red-200"
                     )}
                 >
                     <Shield className="h-4 w-4" />
