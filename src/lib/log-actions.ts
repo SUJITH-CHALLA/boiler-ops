@@ -54,7 +54,7 @@ export async function submitHourlyLog(formData: FormData) {
                 boilerId,
                 startTime: new Date().toLocaleTimeString("en-GB", { hour: '2-digit', minute: '2-digit' }),
                 endTime: "", // Pending
-                steamPressure: "", // Will be aggregated later
+                steamPressure: "0", // Default to 0 instead of empty string to avoid integer conversion errors later? Strings are fine.
                 steamTemp: "",
                 fuelType: "Coal", // Default
                 fuelConsumed: "0",
@@ -63,6 +63,8 @@ export async function submitHourlyLog(formData: FormData) {
                 blowdownPerformed: false,
                 remarks: "Auto-created by Hourly Log",
             }).returning();
+
+            if (!newLog) throw new Error("Failed to initialize Shift Log header.");
             shiftLog = newLog;
         }
 
@@ -70,7 +72,7 @@ export async function submitHourlyLog(formData: FormData) {
 
         await db.insert(hourlyLogs).values({
             shiftLogId: shiftLog.id,
-            readings: readings, // Stores dynamic data like { "steam_pressure": "100", "temp": "200" }
+            readings: readings,
             readingTime: readingTime,
             recordedById: parseInt(session.user.id),
         });
@@ -80,7 +82,7 @@ export async function submitHourlyLog(formData: FormData) {
         return { success: true };
     } catch (error) {
         console.error("Hourly Log Error:", error);
-        return { error: "Failed to save hourly log." };
+        return { error: error instanceof Error ? error.message : "Failed to save hourly log." };
     }
 }
 
