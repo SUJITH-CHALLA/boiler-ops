@@ -4,10 +4,13 @@ import { FuelChart, BreakdownChart, PressureChart, SteamChart } from "@/componen
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { OperatorView } from "@/components/dashboard/operator-view";
 
+import { ManagerDashboard } from "@/components/dashboard/manager-dashboard";
+
 export default async function DashboardPage() {
     const session = await auth();
     // @ts-ignore
     const role = session?.user?.role;
+    const isManager = role === "manager";
     const showAnalytics = role === "manager" || role === "engineer" || role === "shift_incharge";
 
     let fuelData: any[] = [], breakdownData: any[] = [], pressureData: any[] = [], steamData: any[] = [];
@@ -25,7 +28,12 @@ export default async function DashboardPage() {
     return (
         <div className="flex flex-col gap-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">Plant Dashboard</h1>
+                    <p className="text-muted-foreground">
+                        {isManager ? "Analytical overview and strategic suggestions." : "Operational metrics and action console."}
+                    </p>
+                </div>
                 <form
                     action={async () => {
                         "use server";
@@ -38,29 +46,23 @@ export default async function DashboardPage() {
                 </form>
             </div>
 
-            <div className="rounded-lg border bg-card p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h2 className="text-lg font-semibold">Welcome back, {session?.user?.name || "Operator"}</h2>
-                        <p className="text-muted-foreground mt-1">
-                            {showAnalytics ? "System overview and performance metrics." : "Select an action to proceed."}
-                        </p>
-                    </div>
-                    {showAnalytics && (
-                        <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium border border-primary/20 capitalize">
-                            {role} View
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Operator Quick Stats / Action Console */}
-            {!showAnalytics && (
+            {/* Operator/Other Action Console */}
+            {!isManager && role === "operator" && (
                 <OperatorView />
             )}
 
-            {/* Manager / Engineer Analytics Section */}
-            {showAnalytics && (
+            {/* Manager Specific Detailed Dashboard */}
+            {isManager && (
+                <ManagerDashboard
+                    fuelData={fuelData}
+                    breakdownData={breakdownData}
+                    pressureData={pressureData}
+                    steamData={steamData}
+                />
+            )}
+
+            {/* Standard Analytics for Engineer/Shift Incharge (Old View) */}
+            {role !== "manager" && showAnalytics && (
                 <div className="space-y-6">
                     {/* First Row: Fuel & Pressure */}
                     <div className="grid gap-6 md:grid-cols-2">

@@ -15,11 +15,12 @@ interface NavLinksProps {
 export function NavLinks({ role, canViewRecords, isAdmin }: NavLinksProps) {
     const pathname = usePathname();
 
+    const isManager = role === "manager";
     const links = [
         { href: "/dashboard", label: "Dashboard" },
-        ...(canViewRecords ? [{ href: "/dashboard/attendance", label: "Attendance" }] : []),
-        { href: "/dashboard/shift-log", label: "Shift Logs" },
-        { href: "/dashboard/breakdown", label: "Breakdown" },
+        ...(canViewRecords && !isManager ? [{ href: "/dashboard/attendance", label: "Attendance" }] : []),
+        ...(!isManager ? [{ href: "/dashboard/shift-log", label: "Shift Logs" }] : []),
+        ...(!isManager ? [{ href: "/dashboard/breakdown", label: "Breakdown" }] : []),
         ...(canViewRecords ? [{ href: "/dashboard/records", label: "Records" }] : []),
     ];
 

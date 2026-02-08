@@ -44,28 +44,34 @@ export async function Navbar() {
                                         Dashboard
                                     </Link>
 
-                                    {/* Attendance: Only for Shift Incharge+ */}
-                                    {canViewRecords && (
+                                    {/* Attendance: Only for Shift Incharge+ and NOT Manager */}
+                                    {canViewRecords && role !== "manager" && (
                                         <Link href="/dashboard/attendance" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
                                             <ClipboardList className="h-5 w-5" />
                                             Attendance
                                         </Link>
                                     )}
 
-                                    <Link href="/dashboard/shift-log" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
-                                        <PenTool className="h-5 w-5" />
-                                        Shift Logs
-                                    </Link>
-                                    <Link href="/dashboard/breakdown" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-destructive">
-                                        <AlertTriangle className="h-5 w-5" />
-                                        Report Breakdown
-                                    </Link>
+                                    {role !== "manager" && (
+                                        <>
+                                            <Link href="/dashboard/shift-log" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
+                                                <PenTool className="h-5 w-5" />
+                                                Shift Logs
+                                            </Link>
+                                            <Link href="/dashboard/breakdown" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-destructive">
+                                                <AlertTriangle className="h-5 w-5" />
+                                                Report Breakdown
+                                            </Link>
+                                        </>
+                                    )}
+
                                     {canViewRecords && (
                                         <Link href="/dashboard/records" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
                                             <History className="h-5 w-5" />
-                                            Records
+                                            Records History
                                         </Link>
                                     )}
+
                                     {isAdmin && (
                                         <Link href="/dashboard/admin" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted text-primary">
                                             <Shield className="h-5 w-5" />
