@@ -51,7 +51,7 @@ export function BreakdownChart({ data }: { data: { name: string; value: number }
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }: any) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
@@ -96,7 +96,7 @@ export function SteamChart({ data }: { data: { date: string; generation: number 
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Tooltip formatter={(value: any) => [`${value} Tons`, "Stream Gen"]} />
+                <Tooltip formatter={(value: any) => [`${value} Tons`, "Steam Generated"]} />
                 <Legend />
                 <Bar dataKey="generation" name="Steam Generated (Tons)" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
             </BarChart>
