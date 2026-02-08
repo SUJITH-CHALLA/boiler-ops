@@ -39,6 +39,18 @@ export function OperatorView() {
                         </CardHeader>
                     </Card>
                 </Link>
+
+                <Link href="/dashboard/shift-log/hourly" className="block h-full">
+                    <Card className="hover:bg-primary/5 transition-colors cursor-pointer h-full border-l-4 border-l-orange-500">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-orange-600">Hourly Data</CardTitle>
+                                <ClipboardList className="h-6 w-6 text-orange-600" />
+                            </div>
+                            <CardDescription>Record steam pressure, flow, and temperature hourly.</CardDescription>
+                        </CardHeader>
+                    </Card>
+                </Link>
             </div>
         </div>
     );

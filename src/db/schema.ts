@@ -7,7 +7,10 @@ import {
     boolean,
     integer,
     date,
+    jsonb,
 } from "drizzle-orm/pg-core";
+
+// ... (existing code, I will append new tables below)
 
 // --- Users Table (for Manual Auth) ---
 export const users = pgTable("users", {
@@ -79,4 +82,25 @@ export const breakdowns = pgTable("breakdowns", {
     // Audit
     createdById: integer("created_by_id").references(() => users.id).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// --- Dynamic Form Config (Engineer) ---
+export const formFields = pgTable("form_fields", {
+    id: serial("id").primaryKey(),
+    label: text("label").notNull(),
+    key: text("key").notNull(),
+    type: text("type", { enum: ["text", "number", "select"] }).notNull(),
+    unit: text("unit"),
+    required: boolean("required").default(true),
+    order: integer("order").default(0),
+    isActive: boolean("is_active").default(true),
+});
+
+// --- Hourly Logs ---
+export const hourlyLogs = pgTable("hourly_logs", {
+    id: serial("id").primaryKey(),
+    shiftLogId: integer("shift_log_id").references(() => shiftLogs.id).notNull(),
+    loggedAt: timestamp("logged_at").defaultNow().notNull(),
+    readings: jsonb("readings").notNull(),
+    recordedById: integer("recorded_by_id").references(() => users.id).notNull(),
 });

@@ -1,9 +1,77 @@
 "use server";
-
 import { db } from "@/db";
-import { shiftLogs } from "@/db/schema";
+import { shiftLogs, hourlyLogs, formFields } from "@/db/schema";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
+import { and, eq } from "drizzle-orm";
+
+export async function submitHourlyLog(formData: FormData) {
+    const session = await auth();
+    if (!session?.user?.id) return { error: "Unauthorized" };
+
+    const boilerId = formData.get("boilerId") as string;
+    const shift = formData.get("shift") as "A" | "B" | "C";
+    const date = new Date().toISOString().split("T")[0];
+
+    // Get Active Custom Fields
+    const fields = await db.select().from(formFields).where(eq(formFields.isActive, true));
+
+    const readings: Record<string, any> = {};
+    for (const field of fields) {
+        const val = formData.get(field.key);
+        // Basic validation
+        if (field.required && (!val || val.toString().trim() === "")) {
+            return { error: `Missing required field: ${field.label}` };
+        }
+        readings[field.key] = val;
+    }
+
+    try {
+        // Ensure Shift Log exists (Draft or Active)
+        let shiftLog = await db.query.shiftLogs.findFirst({
+            where: and(
+                eq(shiftLogs.date, date),
+                eq(shiftLogs.shift, shift),
+                eq(shiftLogs.boilerId, boilerId)
+            )
+        });
+
+        if (!shiftLog) {
+            // Create Draft Shift Log to attach hourly logs to
+            const [newLog] = await db.insert(shiftLogs).values({
+                createdById: parseInt(session.user.id),
+                operatorName: session.user.name || "Unknown Operator",
+                date,
+                shift,
+                boilerId,
+                startTime: new Date().toLocaleTimeString("en-GB", { hour: '2-digit', minute: '2-digit' }),
+                endTime: "", // Pending
+                steamPressure: "", // Will be aggregated later
+                steamTemp: "",
+                fuelType: "Coal", // Default
+                fuelConsumed: "0",
+                steamFlowStart: "0",
+                steamFlowEnd: "0",
+                blowdownPerformed: false,
+                remarks: "Auto-created by Hourly Log",
+            }).returning();
+            shiftLog = newLog;
+        }
+
+        await db.insert(hourlyLogs).values({
+            shiftLogId: shiftLog.id,
+            readings: readings, // Stores dynamic data like { "steam_pressure": "100", "temp": "200" }
+            recordedById: parseInt(session.user.id),
+        });
+
+        revalidatePath("/dashboard");
+        revalidatePath("/dashboard/shift-log/hourly");
+        return { success: true };
+    } catch (error) {
+        console.error("Hourly Log Error:", error);
+        return { error: "Failed to save hourly log." };
+    }
+}
 
 export async function submitShiftLog(formData: FormData) {
     const session = await auth();

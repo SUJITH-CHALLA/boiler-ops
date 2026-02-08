@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { AddUserForm } from "./user-form";
 import { ResetPasswordButton } from "./reset-button";
+import Link from "next/link";
+import { Settings } from "lucide-react";
 
 export default async function AdminPage() {
     const session = await auth();
@@ -31,20 +33,40 @@ export default async function AdminPage() {
             <div className="grid gap-6 md:grid-cols-2">
                 <AddUserForm />
 
-                {/* User Stats/Overview could go here */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>System Overview</CardTitle>
-                        <CardDescription>Current user distribution.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-sm">
-                            <p><strong>Total Users:</strong> {allUsers.length}</p>
-                            <p><strong>Operators:</strong> {allUsers.filter(u => u.role === 'operator').length}</p>
-                            <p><strong>Supervisors (In-Charge/Manager):</strong> {allUsers.filter(u => u.role === 'shift_incharge' || u.role === 'manager').length}</p>
-                        </div>
-                    </CardContent>
-                </Card>
+                <div className="flex flex-col gap-6">
+                    {/* User Stats/Overview */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>System Overview</CardTitle>
+                            <CardDescription>Current user distribution.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-sm space-y-1">
+                                <p><strong>Total Users:</strong> {allUsers.length}</p>
+                                <p><strong>Operators:</strong> {allUsers.filter(u => u.role === 'operator').length}</p>
+                                <p><strong>Supervisors (In-Charge/Manager):</strong> {allUsers.filter(u => u.role === 'shift_incharge' || u.role === 'manager').length}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Form Configuration Link */}
+                    <Link href="/dashboard/admin/form-builder">
+                        <Card className="hover:border-primary transition-colors cursor-pointer h-full">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Settings className="h-5 w-5" />
+                                    Form Configuration
+                                </CardTitle>
+                                <CardDescription>Customize operator data entry fields.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-sm text-muted-foreground">
+                                    Add or remove columns for hourly operator logs.
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </Link>
+                </div>
             </div>
 
             {/* User List Table */}
