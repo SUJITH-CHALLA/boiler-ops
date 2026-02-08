@@ -92,20 +92,24 @@ export function AttendanceSheet({ users, presentIds, role }: Props) {
                     <CardDescription>Select employees present for the selected date & shift.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col md:flex-row gap-4 mb-6 items-end">
-                        <div className="space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6 items-end">
+                        {/* Date Filter */}
+                        <div className="md:col-span-3 space-y-2">
                             <label className="text-sm font-medium">Date</label>
                             <Input
                                 type="date"
+                                className="h-10 w-full"
                                 value={dateParam}
                                 onChange={(e) => handleDateChange(e.target.value)}
                                 disabled={isPending}
                             />
                         </div>
-                        <div className="space-y-2 w-[120px]">
+
+                        {/* Shift Filter */}
+                        <div className="md:col-span-3 space-y-2">
                             <label className="text-sm font-medium">Shift</label>
                             <Select value={shiftParam} onValueChange={handleShiftChange} disabled={isPending}>
-                                <SelectTrigger>
+                                <SelectTrigger className="h-10 w-full">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -117,10 +121,11 @@ export function AttendanceSheet({ users, presentIds, role }: Props) {
                         </div>
 
                         {/* Search Bar */}
-                        <div className="space-y-2 flex-1">
+                        <div className="md:col-span-6 space-y-2">
                             <label className="text-sm font-medium">Search</label>
                             <Input
                                 placeholder="Type name or role..."
+                                className="h-10 w-full"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
