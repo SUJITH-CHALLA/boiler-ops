@@ -1,4 +1,4 @@
-import { auth, signOut } from "@/auth";
+import { auth } from "@/auth";
 import { getFuelConsumptionStats, getBreakdownStats, getPressureTrends, getSteamGenerationStats } from "@/lib/analytics-data";
 import { getBreakdownLogs } from "@/lib/data";
 import { FuelChart, BreakdownChart, PressureChart, SteamChart } from "@/components/analytics/Charts";

@@ -62,7 +62,7 @@ export function ShiftLogActions({ log, role }: { log: any, role: string }) {
                         <span className="sr-only">View</span>
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto pt-4">
+                <DialogContent className="w-full max-w-[95vw] md:max-w-5xl max-h-[90vh] overflow-y-auto pt-4 px-3 md:px-6">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-bold flex items-center gap-2">
                             <FileText className="h-6 w-6 text-primary" />
@@ -84,7 +84,7 @@ export function ShiftLogActions({ log, role }: { log: any, role: string }) {
                                 {/* Meta Info */}
                                 <div className="space-y-4 border p-4 rounded-lg bg-muted/20 print:bg-transparent print:border-neutral-300 break-inside-avoid">
                                     <h3 className="font-semibold text-sm uppercase tracking-wider text-primary border-b pb-2 print:text-black">Personnel & Pressure</h3>
-                                    <div className="grid grid-cols-2 gap-4 text-sm mt-3">
+                                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-4 text-sm mt-3">
                                         <div><Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Boiler ID</Label><div className="font-bold text-base">{log.boilerId}</div></div>
                                         <div><Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Incharge</Label><div className="font-medium">{log.operatorName}</div></div>
                                         <div><Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Avg Pressure</Label><div className="font-bold text-base text-primary print:text-black">{log.steamPressure}</div></div>
@@ -95,7 +95,7 @@ export function ShiftLogActions({ log, role }: { log: any, role: string }) {
                                 {/* Flow & Fuel Info */}
                                 <div className="space-y-4 border p-4 rounded-lg bg-muted/20 print:bg-transparent print:border-neutral-300 break-inside-avoid">
                                     <h3 className="font-semibold text-sm uppercase tracking-wider text-primary border-b pb-2 print:text-black">Resources Consumption</h3>
-                                    <div className="grid grid-cols-2 gap-4 text-sm mt-3">
+                                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-4 text-sm mt-3">
                                         <div><Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Fuel</Label><div className="font-medium text-base">{log.fuelType}</div></div>
                                         <div><Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Consumed</Label><div className="font-bold text-base">{log.fuelConsumed}</div></div>
                                         <div><Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Initial Flow</Label><div className="font-medium">{log.steamFlowStart}</div></div>
@@ -105,10 +105,10 @@ export function ShiftLogActions({ log, role }: { log: any, role: string }) {
 
                                 <div className="space-y-4 border p-4 rounded-lg bg-muted/20 md:col-span-2 print:bg-transparent print:border-neutral-300 break-inside-avoid">
                                     <h3 className="font-semibold text-sm uppercase tracking-wider text-primary border-b pb-2 print:text-black">Shift Timeline & Notes</h3>
-                                    <div className="grid grid-cols-3 gap-4 text-sm mt-3">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm mt-3">
                                         <div><Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Blowdown Status</Label><div><Badge variant={log.blowdownPerformed ? "default" : "secondary"} className="print:border-black">{log.blowdownPerformed ? "Completed" : "Not Done"}</Badge></div></div>
-                                        <div><Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Commenced</Label><div className="font-medium">{log.startTime}</div></div>
-                                        <div><Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Concluded</Label><div className="font-medium">{log.endTime}</div></div>
+                                        <div className="flex flex-col"><Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Commenced Shift</Label><div className="font-medium bg-muted/40 p-1 rounded text-xs md:text-sm">{log.startTime}</div></div>
+                                        <div className="flex flex-col"><Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Concluded Shift</Label><div className="font-medium bg-muted/40 p-1 rounded text-xs md:text-sm">{log.endTime}</div></div>
                                     </div>
                                     <div className="mt-4 border-t pt-4">
                                         <Label className="text-muted-foreground text-[10px] uppercase print:text-neutral-500">Handover Remarks</Label>
@@ -125,7 +125,7 @@ export function ShiftLogActions({ log, role }: { log: any, role: string }) {
                             ) : hourlyReports.length === 0 ? (
                                 <div className="text-center p-12 border rounded-lg bg-muted/10 text-muted-foreground border-dashed">No hourly readings recorded for this shift.</div>
                             ) : (
-                                <div className="border rounded-md overflow-hidden bg-white shadow-sm print:border-neutral-300">
+                                <div className="border rounded-md overflow-x-auto bg-white shadow-sm print:border-neutral-300">
                                     <Table>
                                         <TableHeader className="bg-muted/50 print:bg-neutral-100">
                                             <TableRow>

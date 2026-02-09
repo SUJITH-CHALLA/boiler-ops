@@ -3,6 +3,8 @@ import { auth, signOut } from "@/auth";
 import { ChangePasswordForm } from "./password-form";
 import { Button } from "@/components/ui/button";
 
+import { getAppVersion, LAST_UPDATED } from "@/lib/version";
+
 export default async function ProfilePage() {
     const session = await auth();
 
@@ -37,6 +39,10 @@ export default async function ProfilePage() {
                         </Button>
                     </form>
                 </div>
+            </div>
+            <div className="mt-8 pt-6 border-t text-center text-sm text-muted-foreground w-full">
+                <p className="font-mono text-xs">App Version: {getAppVersion()}</p>
+                <p className="text-[10px]">Updated: {LAST_UPDATED}</p>
             </div>
         </div>
     );

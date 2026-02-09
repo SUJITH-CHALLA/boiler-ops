@@ -174,7 +174,7 @@ export default async function RecordsPage() {
                                                                     <Eye className="h-4 w-4" /> View Staff
                                                                 </Button>
                                                             </DialogTrigger>
-                                                            <DialogContent className="max-w-md">
+                                                            <DialogContent className="max-w-md w-full max-h-[85vh] overflow-y-auto">
                                                                 <DialogHeader className="no-print relative">
                                                                     <div className="absolute right-0 top-0">
                                                                         <DialogClose asChild>
